@@ -24,10 +24,10 @@ along with Horizontal sidebar. If not, see <http://www.gnu.org/licenses/>.
 /*
 Example code
 
-add_action( 'widgets_init', 'horizontal_sidebar_example', 1000 );
+add_action( 'widgets_init', 'horizontal_sidebar_example', 100 );
 
 function horizontal_sidebar_example() {
-	horizontal_sidebar_register( 'sidebar-1', array( 2, 4 ) );
+	horizontal_sidebar_register( 'sidebar-1', array( 4, 2 ) );
 }
 */
 
@@ -42,7 +42,7 @@ class Horizontal_Sidebar {
 			$columns = array( $columns );
 
 		if( ! empty( $wp_registered_sidebars[ $sidebar_id ] ) ) {
-			$columns = array_map( "absint", $columns );
+			$columns = array_filter( array_map( "absint", $columns ) );
 			$this->sidebars[ $sidebar_id ] = $columns;
 
 			return true;
