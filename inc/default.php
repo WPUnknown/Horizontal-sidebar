@@ -15,7 +15,7 @@ class Horizontal_Sidebar_Default {
 		$sidebar_id = $params[0]['id'];
 		$sidebars   = $horizontal_sidebar->registered_sidebars();
 
-		if( ! isset( $sidebars[ $sidebar_id ] ) )
+		if( ! in_array( $sidebar_id, $sidebars ) )
 			return $params;
 
 		if( ! isset( $this->counters[ $sidebar_id ] ) )

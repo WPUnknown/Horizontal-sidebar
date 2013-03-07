@@ -77,7 +77,7 @@ class Horizontal_Sidebar {
 	}
 
 	public function registered_sidebars() {
-		return $this->sidebars;
+		return array_keys( $this->sidebars );
 	}
 
 
