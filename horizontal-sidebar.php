@@ -39,6 +39,9 @@ class Horizontal_Sidebar {
 	function __construct() {
 		if( is_admin() )
 			add_filter( 'dynamic_sidebar_params', array( $this, 'add_selectbox' ), 10000 );
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) );
+		add_action( 'wp_ajax_horizontal_sidebar_columns', array( $this, 'ajax_save_columns' ) );
 	}
 
 	public function register( $sidebar_id, $columns ) {
@@ -108,6 +111,35 @@ class Horizontal_Sidebar {
 
 		return $default;
 	}
+
+	function admin_enqueue() {
+		$screen = get_current_screen();
+
+		if ( 'widgets' === $screen->base )
+			wp_enqueue_script( 'horizontal-sidebar', plugins_url( 'js/admin.js', __FILE__ ), array( 'jquery' ) );
+	}
+
+	function ajax_save_columns() {
+		global $wp_registered_sidebars;
+
+		check_ajax_referer( 'save-sidebar-widgets', 'action_nonce' );
+
+		header( "Content-Type: application/json" );
+
+		if( isset( $_POST['sidebar'], $_POST['amount_columns'] ) && ! empty( $wp_registered_sidebars[ $_POST['sidebar'] ] ) ) {
+			$options = get_option( 'horizontal_sidebar_columns', array() );
+			$options[ $_POST['sidebar'] ] = absint( $_POST['amount_columns'] );
+			update_option( 'horizontal_sidebar_columns', $options );
+
+			echo json_encode( array( 'success' => true ) );
+		}
+		else {
+			echo json_encode( array( 'success' => false ) );
+		}
+
+		die();
+	}
+
 }
 
 $GLOBALS['horizontal_sidebar'] = new Horizontal_Sidebar();
