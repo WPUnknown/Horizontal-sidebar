@@ -64,12 +64,15 @@ class Horizontal_Sidebar {
 	public function add_selectbox( $params ) {
 		global $wp_registered_sidebars;
 
+		$sidebar_id = $params[0]['id'];
+
+		if( ! isset( $this->sidebars[ $sidebar_id ] ) )
+			return $params;
+
 		$screen = get_current_screen();
 
 		if( 'widgets' == $screen->base ) {
-			$sidebar_id = $params[0]['id'];
-
-			if( is_admin() && isset( $this->sidebars[ $sidebar_id ] ) && ! isset( $this->dropdown_showed[ $sidebar_id ] ) && count( $this->sidebars[ $sidebar_id ] ) > 1 ) {
+			if( is_admin() && ! isset( $this->dropdown_showed[ $sidebar_id ] ) && count( $this->sidebars[ $sidebar_id ] ) > 1 ) {
 				echo $this->show_selectbox( $sidebar_id, $this->sidebars[ $sidebar_id ] );
 
 				$this->dropdown_showed[ $sidebar_id ] = true;
