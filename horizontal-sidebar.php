@@ -32,7 +32,6 @@ function horizontal_sidebar_example() {
 */
 
 class Horizontal_Sidebar {
-	public static $end_row = '<div class="clearfix"></div>';
 	private $sidebars = array();
 	private $dropdown_showed = array();
 
@@ -42,7 +41,24 @@ class Horizontal_Sidebar {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue' ) );
 		add_action( 'wp_ajax_horizontal_sidebar_columns', array( $this, 'ajax_save_columns' ) );
+
+		add_action( 'plugins_loaded', array( $this, 'load_sidebar_type' ) );
 	}
+
+
+	function load_sidebar_type() {
+		$type = apply_filters( 'horizontal_sidebar_type', 'default' );
+
+		if( 'masonry' == $type ) {
+			include 'inc/masonry.php';
+			new Horizontal_Sidebar_Masonry();
+		}
+		else {
+			include 'inc/default.php';
+			new Horizontal_Sidebar_Default();
+		}
+	}
+
 
 	public function register( $sidebar_id, $columns ) {
 		global $wp_registered_sidebars, $_wp_sidebars_widgets;
@@ -58,6 +74,10 @@ class Horizontal_Sidebar {
 		}
 
 		return false;
+	}
+
+	public function registered_sidebars() {
+		return $this->sidebars;
 	}
 
 
@@ -86,7 +106,7 @@ class Horizontal_Sidebar {
 		$return  = '<div class="sidebar-description" style="margin-top:-10px;">' . __( 'Amount of columns', 'horizontal_sidebar' ) . ' &nbsp; <select class="sidebar-columns">';
 
 		$default_amount = $columns[0];
-		$current_amount = $this->get_columns_for_sidebar( $sidebar_id, $default_amount );
+		$current_amount = $this->get_columns_for_sidebar( $sidebar_id );
 		sort( $columns );
 
 		foreach( $columns as $column ) {
@@ -106,13 +126,13 @@ class Horizontal_Sidebar {
 		return $return;
 	}
 
-	private function get_columns_for_sidebar( $sidebar_id, $default ) {
+	public function get_columns_for_sidebar( $sidebar_id ) {
 		$options = get_option( 'horizontal_sidebar_columns', array() );
 
 		if( isset( $options[ $sidebar_id ] ) )
 			return absint( $options[ $sidebar_id ] );
 
-		return $default;
+		return $this->sidebars[ $sidebar_id ][0] ;
 	}
 
 	function admin_enqueue() {
