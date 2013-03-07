@@ -39,7 +39,7 @@ class Horizontal_Sidebar_Masonry {
 							$gutter_width   = apply_filters( 'horizontal_sidebar_masonry_gutter_width', 20, $amount_columns, $sidebar_id );
 
 							if( ! $width )
-								$width = 'function( containerWidth ) { return containerWidth / 5; }';
+								$width = 'function( containerWidth ) { return containerWidth / ' . $amount_columns . '; }';
 
 							if( ! $item_selector || ! $item_selector )
 								continue;
